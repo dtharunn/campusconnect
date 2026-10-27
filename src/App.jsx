@@ -90,7 +90,22 @@ function formatDate(e) { return new Date(`${e.date}T${e.time || '12:00'}:00`).to
 function formatTime(e) { return new Date(`${e.date}T${e.time || '12:00'}:00`).toLocaleTimeString('en-IN',{hour:'numeric',minute:'2-digit'}); }
 
 export default function App() {
- const [events,setEvents] = useState(() => { const saved=readStore(EVENTS_KEY,null); return Array.isArray(saved)?saved:seedEvents; });
+const [events, setEvents] = useState(() => {
+  const saved = readStore(EVENTS_KEY, null);
+
+  if (!Array.isArray(saved)) {
+    return seedEvents;
+  }
+
+  return seedEvents.map(seed => {
+    const existing = saved.find(event => event.id === seed.id);
+
+    return {
+      ...existing,
+      ...seed
+    };
+  });
+});
  const [registrations,setRegistrations] = useState(() => { const saved=readStore(REGS_KEY,[]); return Array.isArray(saved)?saved:[]; });
  const [page,setPage] = useState('events');
  const [query,setQuery] = useState(''); const [category,setCategory] = useState(''); const [date,setDate] = useState('');
