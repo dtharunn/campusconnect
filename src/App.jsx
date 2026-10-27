@@ -4,13 +4,86 @@ import { CalendarDays, MapPin, Users, Search, Ticket, X, CheckCircle2, Graduatio
 
 const EVENTS_KEY = 'campusconnect_events_v1';
 const REGS_KEY = 'campusconnect_registrations_v1';
+
 const seedEvents = [
- {id:'evt-techfest',title:'Campus TechFest 2026',category:'Technology',date:'2026-11-12',time:'09:30',venue:'Main Auditorium',capacity:120,description:'A full day of innovation, coding challenges, project showcases, and technology talks.',emoji:'💻',cancelAllowed:true},
- {id:'evt-design',title:'Design Thinking Workshop',category:'Workshop',date:'2026-11-05',time:'10:00',venue:'Innovation Lab · Block B',capacity:45,description:'Learn user-centered design, rapid ideation, and how to turn a problem into a prototype.',emoji:'✏️',cancelAllowed:true},
- {id:'evt-career',title:'Career Connect: Industry Day',category:'Career',date:'2026-11-18',time:'11:00',venue:'Seminar Hall 2',capacity:90,description:'Meet industry professionals, discover career paths, and get practical interview advice.',emoji:'🚀',cancelAllowed:true},
- {id:'evt-music',title:'Rhythm & Roots',category:'Arts & Culture',date:'2026-11-08',time:'16:30',venue:'Open-Air Theatre',capacity:200,description:'An evening of student performances, music, dance, and creative expression.',emoji:'🎭',cancelAllowed:false},
- {id:'evt-sports',title:'Inter-Department Sports Meet',category:'Sports',date:'2026-11-21',time:'08:00',venue:'College Sports Ground',capacity:160,description:'Bring your team spirit to a day of friendly competition across departments.',emoji:'🏆',cancelAllowed:true},
- {id:'evt-ai',title:'AI & Future Technologies',category:'Technology',date:'2026-11-27',time:'13:00',venue:'Digital Learning Centre',capacity:75,description:'Explore practical AI applications, responsible innovation, and emerging technology trends.',emoji:'🤖',cancelAllowed:true},
+  {
+    id: 'evt-techfest',
+    title: 'Campus TechFest 2026',
+    category: 'Technology',
+    date: '2026-11-12',
+    time: '09:30',
+    venue: 'Main Auditorium',
+    capacity: 120,
+    registeredCount: 120,
+    description: 'A full day of innovation, coding challenges, project showcases, and technology talks.',
+    emoji: '💻',
+    cancelAllowed: true
+  },
+  {
+    id: 'evt-design',
+    title: 'Design Thinking Workshop',
+    category: 'Workshop',
+    date: '2026-11-05',
+    time: '10:00',
+    venue: 'Innovation Lab · Block B',
+    capacity: 45,
+    registeredCount: 45,
+    description: 'Learn user-centered design, rapid ideation, and how to turn a problem into a prototype.',
+    emoji: '✏️',
+    cancelAllowed: true
+  },
+  {
+    id: 'evt-career',
+    title: 'Career Connect: Industry Day',
+    category: 'Career',
+    date: '2026-11-18',
+    time: '11:00',
+    venue: 'Seminar Hall 2',
+    capacity: 90,
+    registeredCount: 80,
+    description: 'Meet industry professionals, discover career paths, and get practical interview advice.',
+    emoji: '🚀',
+    cancelAllowed: true
+  },
+  {
+    id: 'evt-music',
+    title: 'Rhythm & Roots',
+    category: 'Arts & Culture',
+    date: '2026-11-08',
+    time: '16:30',
+    venue: 'Open-Air Theatre',
+    capacity: 200,
+    registeredCount: 125,
+    description: 'An evening of student performances, music, dance, and creative expression.',
+    emoji: '🎭',
+    cancelAllowed: false
+  },
+  {
+    id: 'evt-sports',
+    title: 'Inter-Department Sports Meet',
+    category: 'Sports',
+    date: '2026-11-21',
+    time: '08:00',
+    venue: 'College Sports Ground',
+    capacity: 160,
+    registeredCount: 100,
+    description: 'Bring your team spirit to a day of friendly competition across departments.',
+    emoji: '🏆',
+    cancelAllowed: true
+  },
+  {
+    id: 'evt-ai',
+    title: 'AI & Future Technologies',
+    category: 'Technology',
+    date: '2026-11-27',
+    time: '13:00',
+    venue: 'Digital Learning Centre',
+    capacity: 75,
+    registeredCount: 75,
+    description: 'Explore practical AI applications, responsible innovation, and emerging technology trends.',
+    emoji: '🤖',
+    cancelAllowed: true
+  },
 ];
 function readStore(key, fallback) { try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch { return fallback; } }
 function formatDate(e) { return new Date(`${e.date}T${e.time || '12:00'}:00`).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
@@ -26,7 +99,19 @@ export default function App() {
  useEffect(()=>localStorage.setItem(EVENTS_KEY,JSON.stringify(events)),[events]);
  useEffect(()=>localStorage.setItem(REGS_KEY,JSON.stringify(registrations)),[registrations]);
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),3000);return()=>clearTimeout(t)},[toast]);
- const countFor = id => registrations.filter(r=>r.eventId===id).length;
+ const countFor = id => {
+  const event = events.find(e => e.id === id);
+  if (!event) return 0;
+
+  const actualRegistrations = registrations.filter(
+    r => r.eventId === id
+  ).length;
+
+  return Math.max(
+    Number(event.registeredCount) || 0,
+    actualRegistrations
+  );
+};
  const isFull = e => Number(e.capacity)>0 && countFor(e.id)>=Number(e.capacity);
  const remaining = e => Number(e.capacity)>0?Math.max(0,Number(e.capacity)-countFor(e.id)):null;
  const filtered = useMemo(()=>events.filter(e=>(`${e.title} ${e.description} ${e.venue} ${e.category}`).toLowerCase().includes(query.trim().toLowerCase())&&(!category||e.category===category)&&(!date||e.date===date)).sort((a,b)=>a.date.localeCompare(b.date)),[events,query,category,date,registrations]);
