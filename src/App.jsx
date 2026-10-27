@@ -14,7 +14,7 @@ const seedEvents = [
     time: '09:30',
     venue: 'Main Auditorium',
     capacity: 120,
-    registeredCount: 120,
+    registeredCount: 199,
     description: 'A full day of innovation, coding challenges, project showcases, and technology talks.',
     emoji: '💻',
     cancelAllowed: true
@@ -27,7 +27,7 @@ const seedEvents = [
     time: '10:00',
     venue: 'Innovation Lab · Block B',
     capacity: 45,
-    registeredCount: 45,
+    registeredCount: 25,
     description: 'Learn user-centered design, rapid ideation, and how to turn a problem into a prototype.',
     emoji: '✏️',
     cancelAllowed: true
@@ -79,7 +79,7 @@ const seedEvents = [
     time: '13:00',
     venue: 'Digital Learning Centre',
     capacity: 75,
-    registeredCount: 75,
+    registeredCount: 70,
     description: 'Explore practical AI applications, responsible innovation, and emerging technology trends.',
     emoji: '🤖',
     cancelAllowed: true
