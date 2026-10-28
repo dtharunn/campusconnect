@@ -114,7 +114,8 @@ const [events, setEvents] = useState(() => {
  useEffect(()=>localStorage.setItem(EVENTS_KEY,JSON.stringify(events)),[events]);
  useEffect(()=>localStorage.setItem(REGS_KEY,JSON.stringify(registrations)),[registrations]);
  useEffect(()=>{if(!toast)return;const t=setTimeout(()=>setToast(''),3000);return()=>clearTimeout(t)},[toast]);
- const countFor = id => {
+ 
+const countFor = id => {
   const event = events.find(e => e.id === id);
   if (!event) return 0;
 
@@ -122,13 +123,16 @@ const [events, setEvents] = useState(() => {
     r => r.eventId === id
   ).length;
 
-  return Math.max(
-    Number(event.registeredCount) || 0,
-    actualRegistrations
-  );
+  return (Number(event.registeredCount) || 0) + actualRegistrations;
 };
- const isFull = e => Number(e.capacity)>0 && countFor(e.id)>=Number(e.capacity);
- const remaining = e => Number(e.capacity)>0?Math.max(0,Number(e.capacity)-countFor(e.id)):null;
+const isFull = e =>
+  Number(e.capacity) > 0 &&
+  countFor(e.id) >= Number(e.capacity);
+
+const remaining = e =>
+  Number(e.capacity) > 0
+    ? Math.max(0, Number(e.capacity) - countFor(e.id))
+    : null;
  const filtered = useMemo(()=>events.filter(e=>(`${e.title} ${e.description} ${e.venue} ${e.category}`).toLowerCase().includes(query.trim().toLowerCase())&&(!category||e.category===category)&&(!date||e.date===date)).sort((a,b)=>a.date.localeCompare(b.date)),[events,query,category,date,registrations]);
  const upcomingCount = events.filter(e=>e.date>=new Date().toISOString().slice(0,10)).length;
  function startRegistration(e) { if(isFull(e)){setToast('This event has reached capacity.');return;} if(new Date(`${e.date}T${e.time||'12:00'}:00`)<new Date()){setToast('Registration for this event has closed.');return;} setSelected(e);setForm({name:'',studentId:'',email:'',department:''});setFormError(''); }
